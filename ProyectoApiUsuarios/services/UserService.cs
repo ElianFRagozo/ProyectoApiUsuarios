@@ -29,15 +29,15 @@ namespace ProyectoApiUsuarios.Services
             await _users.InsertOneAsync(user);
         }
 
-        public async Task<UserModel> AuthenticateAsync(string username, string password)
+        public async Task<UserModel> AuthenticateAsync(string email, string password)
         {
-            var user = await _users.Find(u => u.Username == username && u.Password == password).FirstOrDefaultAsync();
+            var user = await _users.Find(u => u.Email == email && u.Password == password).FirstOrDefaultAsync();
             return user;
         }
 
-        public async Task<UserModel> GetUserByUsernameAsync(string username)
+        public async Task<UserModel> GetUserByEmailAsync(string email)
         {
-            return await _users.Find(u => u.Username == username).FirstOrDefaultAsync();
+            return await _users.Find(u => u.Email == email).FirstOrDefaultAsync();
         }
 
 

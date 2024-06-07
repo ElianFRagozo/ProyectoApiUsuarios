@@ -37,14 +37,14 @@ namespace ProyectoApiUsuarios.Controllers
             await _userService.CreateUserAsync(userModel);
 
             // Retornar una respuesta con el nuevo usuario creado
-            return CreatedAtAction(nameof(GetUserByUsername), new { username = userModel.Username }, userModel);
+            return CreatedAtAction(nameof(GetUserByEmail), new { email = userModel.Email }, userModel);
         }
 
 
-        [HttpGet("{username}")]
-        public async Task<IActionResult> GetUserByUsername(string username)
+        [HttpGet("{email}")]
+        public async Task<IActionResult> GetUserByEmail(string email)
         {
-            var user = await _userService.GetUserByUsernameAsync(username);
+            var user = await _userService.GetUserByEmailAsync(email);
             if (user == null)
             {
                 return NotFound();
