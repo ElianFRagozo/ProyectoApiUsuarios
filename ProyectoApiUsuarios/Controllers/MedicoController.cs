@@ -42,6 +42,7 @@ namespace ProyectoApiUsuarios.Controllers
         [HttpGet("all")]
         public async Task<IActionResult> GetAllUsers()
         {
+
             var medicos = await _medicoService.GetMedicosAsync();
             return Ok(medicos);
         }
