@@ -1,5 +1,6 @@
 using MongoDB.Driver;
 using ProyectoApiUsuarios.Controllers;
+using ProyectoApiUsuarios.services;
 using ProyectoApiUsuarios.Services;
 
 
@@ -21,6 +22,7 @@ builder.Services.AddSingleton<IMongoDatabaseSettings>(sp =>
 
 // Crea una instancia de PatientService y la registra como un servicio singleton
 builder.Services.AddSingleton<UserService>();
+builder.Services.AddSingleton<MedicoService>();
 
 var app = builder.Build();
 
