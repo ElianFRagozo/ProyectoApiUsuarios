@@ -3,7 +3,7 @@ using MongoDB.Driver;
 using ProyectoApiUsuarios.Services;
 using ProyectoApiUsuarios.models;
 
-namespace ProyectoApiUsuarios.services
+namespace ProyectoApiUsuarios.Services
 {
     public class MedicoService
     {
