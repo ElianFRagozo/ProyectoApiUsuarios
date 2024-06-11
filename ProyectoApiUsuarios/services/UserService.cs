@@ -35,6 +35,12 @@ namespace ProyectoApiUsuarios.Services
         {
             return await _users.Find(user => user.Email == email && user.Password == password).FirstOrDefaultAsync();
         }
+
+        public async Task<List<string>> GetUserRolesAsync(string userId)
+        {
+            var user = await _users.Find(u => u.Id == userId).FirstOrDefaultAsync();
+            return user?.Roles ?? new List<string>(); // Devuelve los roles del usuario o una lista vacía si no se encuentra
+        }
     }
 }
 

@@ -47,6 +47,12 @@ namespace ProyectoApiUsuarios.Services
                 }
             }
         }
+
+        public async Task<Medico> GetMedicoByEmailAsync(string email)
+        {
+            return await _Medico.Find(m => m.Email == email).FirstOrDefaultAsync();
+        }
+
     }
     namespace ProyectoApiUsuarios.Controllers
     {

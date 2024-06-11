@@ -15,12 +15,14 @@ namespace ProyectoApiUsuarios.Controllers
     public class UsersController : ControllerBase
     {
         private readonly UserService _userService;
+        private readonly MedicoService _medicoService;
         private readonly IConfiguration _configuration;
         private readonly HttpClient _httpClient;
 
-        public UsersController(UserService userService, IConfiguration configuration, HttpClient httpClient)
+         public UsersController(UserService userService, MedicoService medicoService, IConfiguration configuration, HttpClient httpClient)
         {
             _userService = userService;
+            _medicoService = medicoService;
             _configuration = configuration;
             _httpClient = httpClient;
         }
@@ -162,11 +164,42 @@ namespace ProyectoApiUsuarios.Controllers
             var patientToUse = patientList.FirstOrDefault();
 
             // Genera el token JWT con el usuario y el paciente asociado
-            var token = GenerateJwtToken(user, patientToUse);
-            return Ok(new { token });
+            var token = GenerateJwtToken(user, patientToUse, null);
+            return Ok(new { token, patient = patientToUse });
         }
 
-        private string GenerateJwtToken(UserModel user, PatientDto patient)
+        [HttpPost("medico-data")]
+        public async Task<IActionResult> GetMedicoData([FromBody] MedicoLoginModel medicoLoginModel)
+        {
+            if (medicoLoginModel == null || string.IsNullOrWhiteSpace(medicoLoginModel.Email) || string.IsNullOrWhiteSpace(medicoLoginModel.Password))
+            {
+                return BadRequest("Solicitud no válida");
+            }
+
+            var user = await _userService.ValidateUserCredentialsAsync(medicoLoginModel.Email, medicoLoginModel.Password);
+            if (user == null)
+            {
+                return Unauthorized();
+            }
+
+            var medico = await _medicoService.GetMedicoByEmailAsync(user.Email);
+            if (medico == null)
+            {
+                return NotFound("No se encontró un médico con el email proporcionado.");
+            }
+            var medicoDto = new MedicoDto
+            {
+                Nombre = medico.Nombre,
+                Correo = medico.Email,
+                Especialidad = string.Join(", ", medico.Especialidades),
+                Rol = medico.Roles.Contains("admin") ? "admin" : "medico"
+            };
+
+            var token = GenerateJwtToken(user, null, medicoDto);
+            return Ok(new { token, medico = medicoDto });
+        }
+
+        private string GenerateJwtToken(UserModel user, PatientDto patient, MedicoDto medico)
         {
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
@@ -190,6 +223,20 @@ namespace ProyectoApiUsuarios.Controllers
                 claims.Add(new Claim("UserId", patient.UserId));
             }
 
+            if (medico != null)
+            {
+                claims.Add(new Claim("MedicoNombre", medico.Nombre));
+                claims.Add(new Claim("MedicoCorreo", medico.Correo));
+                claims.Add(new Claim("MedicoEspecialidad", medico.Especialidad));
+                claims.Add(new Claim("MedicoRol", medico.Rol));
+            }
+
+            var userRoles = _userService.GetUserRolesAsync(user.Id).Result;
+            if (userRoles.Any())
+            {
+                string userRole = userRoles.First(); // Tomamos el primer rol de la lista
+                claims.Add(new Claim("UserRole", userRole));
+            }
             var token = new JwtSecurityToken(
                 issuer: _configuration["Jwt:Issuer"],
                 audience: _configuration["Jwt:Audience"],
@@ -200,11 +247,24 @@ namespace ProyectoApiUsuarios.Controllers
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
     }
-
     public class LoginModel
     {
         public string Email { get; set; }
         public string Password { get; set; }
+    }
+
+    public class MedicoLoginModel
+{
+    public string Email { get; set; }
+    public string Password { get; set; }
+}
+
+    public class MedicoDto
+    {
+        public string Nombre { get; set; }
+        public string Correo { get; set; }
+        public string Especialidad { get; set; }
+        public string Rol { get; set; }
     }
 }
 

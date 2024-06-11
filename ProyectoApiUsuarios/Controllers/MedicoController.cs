@@ -1,5 +1,4 @@
 ﻿using ProyectoApiUsuarios.models;
-using ProyectoApiUsuarios.services;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,16 +10,18 @@ namespace ProyectoApiUsuarios.Controllers
 {
     public class MedicoController : Controller
     {
-        private static List<Especialidad> especialidades = new List<Especialidad>
-    {
-        new Especialidad { Id = 1, Nombre = "Medicina General" },
-        new Especialidad { Id = 2, Nombre = "Examen Odontologico de Primera Vez y Control" },
-        new Especialidad { Id = 3, Nombre = "Orientacion Medica" },
-        new Especialidad { Id = 4, Nombre = "Vacunacion Covid 19" },
-        new Especialidad { Id = 5, Nombre = "Valoracion integrales por Medico" },
-        new Especialidad { Id = 6, Nombre = "Valoracion integrales por Enfermera" },
-        new Especialidad { Id = 7, Nombre = "Atencion en Salud Sexual y Reproductiva" }
-    };
+
+    private readonly List<string> _especialidades = new List<string>
+{
+    "Medicina General",
+    "Examen Odontológico de Primera Vez y Control",
+    "Orientación Médica",
+    "Vacunación Covid 19",
+    "Valoración Integral por Médico",
+    "Valoración Integral por Enfermera",
+    "Atención en Salud Sexual y Reproductiva"
+};
+
         private readonly MedicoService  _medicoService;
         private readonly UserService _userService;
 
@@ -54,7 +55,7 @@ namespace ProyectoApiUsuarios.Controllers
         [HttpGet("especialidades")]
         public IActionResult GetEspecialidades()
         {
-            return Ok(especialidades);
+            return Ok(_especialidades);
         }
 
         [HttpPost("medicos")]
@@ -69,8 +70,9 @@ namespace ProyectoApiUsuarios.Controllers
             var newId = ObjectId.GenerateNewId();
             medico.Id = newId.ToString();
 
-            var especialidadesValidas = especialidades.Select(e => e.Id).ToList();
-            var especialidadesInvalidas = medico.EspecialidadesIds.Except(especialidadesValidas).ToList();
+            var especialidadesValidas = medico.Especialidades.Select(id => id.ToString()).Intersect(_especialidades).ToList();
+            var especialidadesInvalidas = medico.Especialidades.Select(id => id.ToString()).Except(_especialidades).ToList();
+
 
             if (especialidadesInvalidas.Any())
             {
