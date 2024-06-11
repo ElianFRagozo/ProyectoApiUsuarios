@@ -1,6 +1,6 @@
 ﻿using MongoDB.Bson;
 using MongoDB.Driver;
-using ProyectoApiUsuarios.Controllers;
+using ProyectoApiUsuarios.Services;
 using ProyectoApiUsuarios.models;
 
 namespace ProyectoApiUsuarios.services
@@ -27,17 +27,26 @@ namespace ProyectoApiUsuarios.services
         {
             await _Medico.InsertOneAsync(Medico);
         }
-
-
-       
-
         public async Task<Medico> GetPatientAsync(string id)
         {
             var objectId = ObjectId.Parse(id);
             return await _Medico.Find(m => m.Id == objectId.ToString()).FirstOrDefaultAsync();
         }
 
-        
+        public async Task AssignRoleAsync(string userId, string role)
+        {
+            var user = await _Medico.Find(u => u.Id == userId).FirstOrDefaultAsync();
+            if (user != null && (role == "admin" || role == "medico"))
+            {
+                if (!user.Roles.Contains(role))
+                {
+                    user.Roles.Add(role);
+                    var filter = Builders<Medico>.Filter.Eq(u => u.Id, userId);
+                    var update = Builders<Medico>.Update.Set(u => u.Roles, user.Roles);
+                    await _Medico.UpdateOneAsync(filter, update);
+                }
+            }
+        }
     }
     namespace ProyectoApiUsuarios.Controllers
     {

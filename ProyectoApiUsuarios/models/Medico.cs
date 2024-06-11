@@ -8,5 +8,6 @@
         public string Email { get; set; }
         public string Contraseña { get; set; }
         public List<int> EspecialidadesIds { get; set; }
+        public List<string> Roles { get; set; }
     }
 }

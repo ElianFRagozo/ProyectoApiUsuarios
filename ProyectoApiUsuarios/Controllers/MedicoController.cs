@@ -13,9 +13,13 @@ namespace ProyectoApiUsuarios.Controllers
     {
         private static List<Especialidad> especialidades = new List<Especialidad>
     {
-        new Especialidad { Id = 1, Nombre = "Cardiología" },
-        new Especialidad { Id = 2, Nombre = "Neurología" },
-        new Especialidad { Id = 3, Nombre = "Pediatría" }
+        new Especialidad { Id = 1, Nombre = "Medicina General" },
+        new Especialidad { Id = 2, Nombre = "Examen Odontologico de Primera Vez y Control" },
+        new Especialidad { Id = 3, Nombre = "Orientacion Medica" },
+        new Especialidad { Id = 4, Nombre = "Vacunacion Covid 19" },
+        new Especialidad { Id = 5, Nombre = "Valoracion integrales por Medico" },
+        new Especialidad { Id = 6, Nombre = "Valoracion integrales por Enfermera" },
+        new Especialidad { Id = 7, Nombre = "Atencion en Salud Sexual y Reproductiva" }
     };
         private readonly MedicoService  _medicoService;
         private readonly UserService _userService;
@@ -77,6 +81,7 @@ namespace ProyectoApiUsuarios.Controllers
             _user.Id = newId2.ToString();
             _user.Email= medico.Email;
             _user.Password = medico.Contraseña;
+            _user.Roles = medico.Roles;
             
 
             await _userService.CreateUserAsync(_user);

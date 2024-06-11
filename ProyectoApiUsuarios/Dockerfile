@@ -4,17 +4,18 @@
 #For more information, please see https://aka.ms/containercompat
 
 FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS base
+ENV ASPNETCORE_ENVIRONMENT=Development
+ENV PATIENT_SERVICE_BASE_URL=http://pacientes:80/api/Patients/{0}
 WORKDIR /app
 EXPOSE 80
-EXPOSE 443
 
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["ProyectoApiUsuarios/ProyectoApiUsuarios.csproj", "ProyectoApiUsuarios/"]
-RUN dotnet restore "./ProyectoApiUsuarios/ProyectoApiUsuarios.csproj"
+COPY ["ProyectoApiUsuarios.csproj", "."]
+RUN dotnet restore "./ProyectoApiUsuarios.csproj"
 COPY . .
-WORKDIR "/src/ProyectoApiUsuarios"
+WORKDIR "/src/."
 RUN dotnet build "./ProyectoApiUsuarios.csproj" -c %BUILD_CONFIGURATION% -o /app/build
 
 FROM build AS publish
@@ -24,4 +25,4 @@ RUN dotnet publish "./ProyectoApiUsuarios.csproj" -c %BUILD_CONFIGURATION% -o /a
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "ProyectoApiUsuarios.dll"]
+ENTRYPOINT ["dotnet", "ProyectoApiUsuarios.dll","environment=Development"]
