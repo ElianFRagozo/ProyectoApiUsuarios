@@ -44,6 +44,7 @@ namespace ProyectoApiUsuarios.Controllers
 
             return Ok(medico);
         }
+        
         [HttpGet("all")]
         public async Task<IActionResult> GetAllUsers()
         {

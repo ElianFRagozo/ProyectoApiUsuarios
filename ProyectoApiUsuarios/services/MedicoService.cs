@@ -27,7 +27,8 @@ namespace ProyectoApiUsuarios.Services
         {
             await _Medico.InsertOneAsync(Medico);
         }
-        public async Task<Medico> GetPatientAsync(string id)
+
+        public async Task<Medico> GetMedicoAsync(string id)
         {
             var objectId = ObjectId.Parse(id);
             return await _Medico.Find(m => m.Id == objectId.ToString()).FirstOrDefaultAsync();

@@ -18,6 +18,7 @@ builder.Services.AddSingleton<IMongoDatabaseSettings>(sp =>
 
 builder.Services.AddSingleton<UserService>();
 builder.Services.AddSingleton<MedicoService>();
+builder.Services.AddSingleton<PatientService>();
 builder.Services.AddHttpClient();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
