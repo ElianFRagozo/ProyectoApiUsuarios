@@ -5,7 +5,6 @@
 
 FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS base
 ENV ASPNETCORE_ENVIRONMENT=Development
-ENV PATIENT_SERVICE_BASE_URL=http://pacientes:80/api/Patients/{0}
 WORKDIR /app
 EXPOSE 80
 

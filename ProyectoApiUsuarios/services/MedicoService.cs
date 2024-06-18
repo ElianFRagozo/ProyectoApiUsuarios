@@ -1,6 +1,5 @@
 ﻿using MongoDB.Bson;
 using MongoDB.Driver;
-using ProyectoApiUsuarios.Services;
 using ProyectoApiUsuarios.models;
 
 namespace ProyectoApiUsuarios.Services
@@ -9,13 +8,11 @@ namespace ProyectoApiUsuarios.Services
     {
         private readonly IMongoCollection<Medico> _Medico;
 
-        public MedicoService(IMongoDatabaseSettings settings)
-        {
-            var client = new MongoClient(settings.ConnectionString);
-            var database = client.GetDatabase(settings.DatabaseName);
-
-            _Medico = database.GetCollection<Medico>("Medico");
-        }
+        public MedicoService(IMongoClient mongoClient, IMongoDatabaseSettings settings)
+    {
+        var database = mongoClient.GetDatabase(settings.DatabaseName);
+        _Medico = database.GetCollection<Medico>("Medicos");
+    }
 
 
         public async Task<List<Medico>> GetMedicosAsync()

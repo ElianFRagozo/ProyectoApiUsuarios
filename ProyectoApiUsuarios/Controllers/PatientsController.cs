@@ -81,7 +81,7 @@ namespace ProyectoApiUsuarios.Controllers
 
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdatePatient(string id, [FromBody] PatientDto patientDto)
+        public async Task<IActionResult> UpdatePatient(string id, [FromBody] UpdatePatientDto updatePatientDto)
         {
             var patientToUpdate = await _patientService.GetPatientAsync(id.ToString());
             if (patientToUpdate == null)
@@ -89,26 +89,26 @@ namespace ProyectoApiUsuarios.Controllers
                 return NotFound();
             }
 
-            if (!_validIdentificationTypes.Contains(patientDto.IdentificationType))
+            // Validaciones (por ejemplo, verificar el tipo de identificación)
+            if (!_validIdentificationTypes.Contains(updatePatientDto.IdentificationType))
             {
                 return BadRequest("Tipo de identificación no válido.");
             }
 
-            patientToUpdate.IdentificationType = patientDto.IdentificationType;
-            patientToUpdate.IdentificationNumber = patientDto.IdentificationNumber;
-            patientToUpdate.FirstName = patientDto.FirstName;
-            patientToUpdate.LastName = patientDto.LastName;
-            patientToUpdate.DateOfBirth = patientDto.DateOfBirth;
-            patientToUpdate.Phone = patientDto.Phone;
-            patientToUpdate.Email = patientDto.Email;
-            patientToUpdate.Password = patientDto.Password;
-            patientToUpdate.ConfirmEmail = patientDto.ConfirmEmail;
-            patientToUpdate.ConfirmPassword = patientDto.ConfirmPassword;
+            // Actualizar las propiedades del paciente con los valores del DTO recibido
+            patientToUpdate.IdentificationType = updatePatientDto.IdentificationType;
+            patientToUpdate.IdentificationNumber = updatePatientDto.IdentificationNumber;
+            patientToUpdate.FirstName = updatePatientDto.FirstName;
+            patientToUpdate.LastName = updatePatientDto.LastName;
+            patientToUpdate.DateOfBirth = updatePatientDto.DateOfBirth;
+            patientToUpdate.Phone = updatePatientDto.Phone;
 
+            // Llamar al servicio para actualizar el paciente en la base de datos
             await _patientService.UpdatePatientAsync(id.ToString(), patientToUpdate);
 
             return NoContent();
         }
+
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetPatientById(string id)
